@@ -34,33 +34,6 @@ app.use("/", express.static("./node_modules/bootstrap/dist/"));
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
-//routes
-// app.get('/', (req, res) => {
-//   const courses = [
-//     {
-//       id: 1, name: 'co so du lieu', course_type: 'co so', 
-//       semeter: 'hoc ki-1-2020-2021', department: 'CNTT'
-//     },
-//     {
-//       id: 2, name: 'cau truc du lieu', course_type: 'co so', 
-//       semeter: 'hoc ki-1-2020-2021', department: 'CNTT'
-//     },
-//     {
-//       id: 3, name: 'cong nghe phan mem', course_type: 'co so anh', 
-//       semeter: 'hoc ki-1-2020-2021', department: 'CNTT'
-//     }
-//   ];
-//   // const tesst = JSON.parse(localStorage.getItem('courses'))
-//   // fetch(`${PORT}/api/courses`, {
-//   //   method: 'POST',
-//   //   headers: {
-//   //     'Content-Type': 'application/json',
-//   //   },
-//   //   body: localStorage.getItem('courses'), // send the courses as the request body
-//   // });
-//   return res.render('index', {data: data }); //send data to view
-// });
-
 // cau hinh lai multer
 const storage = multer.memoryStorage({
   destination(req, file, callback) {
@@ -125,6 +98,7 @@ app.post("/save", upload.single('image'), (req, res) => {
       Key: filePath,
       Body: req.file.buffer,
       ContentType: req.file.mimetype,
+      ACL: 'public-read' // Thiết lập đối tượng là public
     };
 
     s3.upload(paramsS3, async (err, data) => {
@@ -152,16 +126,85 @@ app.post("/save", upload.single('image'), (req, res) => {
           return res.status(500).send("internal server error")
         }
       }
-
-
     })
   } catch (error) {
     console.log("Error saving data from DynamoDB: ", error);
     return res.status(500).send("internal server error");
   }
-  
-
 })
+
+app.post("/delete", upload.fields([]), (req, res) => {
+  // Cách 1: Lấy ra list các checkbox được chọn ==> chỉ xoá các item trên DynamoDB
+  // const listCheckboxSelected = Object.keys(req.body);
+  // console.log("listCheckboxSelected: ", listCheckboxSelected);
+  // ---------------------
+
+  // Cách 2: Lấy ra list các checkbox được chọn ==> xoá các item trên DynamoDB và xoá các ảnh trên S3
+  const listCheckboxSelected = [];
+  const listDelImg = [];
+  for (const key in req.body) {
+    if (key.startsWith('checkbox_') && key.endsWith('_ckb')) {
+      const checkboxValue = req.body[key];
+      listCheckboxSelected.push(checkboxValue);
+    }
+  }
+  for (const key in req.body) {
+    for (const checkboxValue of listCheckboxSelected) {
+      if (key.endsWith(checkboxValue)) {
+        const urlImage = req.body[key];
+        const parts = urlImage.split("/");
+        const keyImage = parts[parts.length - 1];
+        listDelImg.push(keyImage);
+      }
+    }
+  }
+  console.log("List of selected checkboxes:", listCheckboxSelected);
+  console.log("List of selected del:", listDelImg);
+  // ---------------------
+
+  if (!listCheckboxSelected || listCheckboxSelected.length <= 0) {
+    return res.redirect('/');
+  }
+  try {
+    function onDeleteItem(length) { //Định nghĩa hàm đệ quy
+      const params = {
+        TableName: tableName,
+        Key: {
+          MASP: Number(listCheckboxSelected[length])
+        }
+      };
+      dynamodb.delete(params, (err, data) => {
+        if (err) {
+          console.log("error: ", err);
+          return res.status(500).send("internal server error")
+        } else {
+          if (length > 0) {
+            onDeleteItem(length - 1);
+          } else {
+            return res.redirect('/');
+          }
+        }
+      })
+
+      //Xoá ảnh trên S3
+      s3.deleteObject({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: listDelImg[length]
+      }, (err, data) => {
+        if (err) {
+          console.log("error: ", err);
+          return res.status(500).send("internal server error")
+        }
+      })
+      // ----------------
+    }
+    onDeleteItem(listCheckboxSelected.length - 1);
+  } catch (error) {
+    console.log("error deleting data from DynamoDB: ", error);
+    return res.status(500).send("internal server error")
+  }
+})
+
 app.post('/', upload.none([]), (req, res) => {
   debugger;
   console.log(req.body);
@@ -171,5 +214,5 @@ app.post('/', upload.none([]), (req, res) => {
 })
 
 app.listen(PORT, function () {
-  console.log('Example app listening on port 3000!');
+  console.log('Example app listening on port 4000!');
 });

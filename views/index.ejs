@@ -38,100 +38,54 @@
         </div>
       </div>
       <!-- <div class="mb-3 row"> -->
-      <input type="submit" name="add" />
+      <input type="submit" name="ADD" value="ADD"/>
       <!-- </div> -->
     </form>
   </div>
   <div class="content" style="margin-top: 20px;">
     <p>Viewing the data from the database</p>
-    <caption>
+    <h4>
       List product
-    </caption>
-    <table class="table">
+    </h4>
+    <form action="/delete" method="post" enctype="multipart/form-data">
+      <table class="table">
 
-      <thead>
-        <tr>
-          <th>No.</th>
-          <th>ProductID</th>
-          <th>Product Name</th>
-          <th>Quantity</th>
-          <th>Image</th>
-          <th>FN</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for (var i=0; i < data.length; i++) { %>
+        <thead>
           <tr>
-            <td>
-              <%= i + 1 %>
-            </td>
-            <td>
-              <%= data[i].MASP %>
-            </td>
-            <td>
-              <%= data[i].TENSANPHAM %>
-            </td>
-            <td>
-              <%= data[i].SOLUONG %>
-            </td>
-            <td>
-              <img src="<%= data[i].IMAGE %>" alt="" style="max-width: 200px; max-height: 200px;">
-            </td>
-            <td>
-
-            </td>
+            <th>ProductID</th>
+            <th>Product Name</th>
+            <th>Quantity</th>
+            <th>Image</th>
+            <th>FN</th>
           </tr>
-          <% } %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% for (var i=0; i < data.length; i++) { %>
+            <tr>
+              <td>
+                <%= data[i].MASP %>
+              </td>
+              <td>
+                <%= data[i].TENSANPHAM %>
+              </td>
+              <td>
+                <%= data[i].SOLUONG %>
+              </td>
+              <td>
+                <img src="<%= data[i].IMAGE %>" alt="" style="max-width: 200px; max-height: 200px;">
+              </td>
+              <td>
+                <input type="hidden" name="delimg_<%= data[i].MASP %>" value="<%= data[i].IMAGE %>">
+                <input type="checkbox" name="checkbox_<%= data[i].MASP %>_ckb" id="checkbox_<%= data[i].MASP %>"
+                  value="<%= data[i].MASP %>" style="width: 30px; height: 30px;">
+              </td>
+            </tr>
+            <% } %>
+        </tbody>
+      </table>
+      <input type="submit" value="Delete" />
+    </form>
   </div>
 </body>
 
 </html>
-
-<script>
-  //   document
-  //     .getElementById("image-upload")
-  //     .addEventListener("change", function (e) {
-  //       var file = e.target.files[0];
-  //       var reader = new FileReader();
-
-  //       reader.onloadend = function () {
-  //         document.getElementById("image-preview").src = reader.result;
-  //       };
-
-  //       if (file) {
-  //         reader.readAsDataURL(file);
-  //       } else {
-  //         document.getElementById("image-preview").src = "";
-  //       }
-  //     });
-
-  //   const courses = [];
-  //   localStorage.setItem("dataCourse", JSON.stringify(courses));
-  //   const dataCourse = JSON.parse(localStorage.getItem("dataCourse"));
-
-  //   const btnAddData = document.getElementById("addDataBtn");
-  //   btnAddData.addEventListener("click", function (e) {
-  //     e.preventDefault();
-  //     const name = document.querySelector('input[name="name"]').value;
-  //     const course_type = document.querySelector(
-  //       'input[name="course_type"]'
-  //     ).value;
-  //     const semeter = document.querySelector('input[name="semeter"]').value;
-  //     const department = document.querySelector('input[name="department"]').value;
-  //     const image = document.querySelector('input[name="image"]').value;
-  //     const course = {
-  //       name,
-  //       course_type,
-  //       semeter,
-  //       department,
-  //       image,
-  //     };
-  //     debugger;
-  //     console.log(course);
-  //     dataCourse.push(course);
-  //     localStorage.setItem("dataCourse", JSON.stringify(dataCourse));
-  //     // window.location.reload();
-  //   });
-</script>
