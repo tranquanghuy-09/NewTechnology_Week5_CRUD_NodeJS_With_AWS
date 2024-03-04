@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>View</title>
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+  <script src="/js/bootstrap.js"></script>
+</head>
+
+<body>
+  <div>
+    <h4>Input Product:</h4>
+    <form action="/save" method="post" enctype="multipart/form-data">
+      <div class="mb-3 row">
+        <label for="productId" class="col-sm-2 col-form-label">ProductID</label>
+        <div class="col-sm-6">
+          <input type="number" name="productId" class="form-control" placeholder="Nhập mã sản phẩm là số" />
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="productName" class="col-sm-2 col-form-label">Product Name</label>
+        <div class="col-sm-6">
+          <input type="text" name="productName" class="form-control" placeholder="Nhập tên sản phẩm" />
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="quantity" class="col-sm-2 col-form-label">Quantity</label>
+        <div class="col-sm-6">
+          <input type="number" name="quantity" class="form-control" placeholder="Nhập số lượng" />
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="image" class="col-sm-2 col-form-label">Image</label>
+        <div class="col-sm-6">
+          <input type="file" accept="image/**" name="image" class="form-control" placeholder="Chọn hình ảnh" />
+        </div>
+      </div>
+      <!-- <div class="mb-3 row"> -->
+      <input type="submit" name="add" />
+      <!-- </div> -->
+    </form>
+  </div>
+  <div class="content" style="margin-top: 20px;">
+    <p>Viewing the data from the database</p>
+    <caption>
+      List product
+    </caption>
+    <table class="table">
+
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>ProductID</th>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Image</th>
+          <th>FN</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (var i=0; i < data.length; i++) { %>
+          <tr>
+            <td>
+              <%= i + 1 %>
+            </td>
+            <td>
+              <%= data[i].MASP %>
+            </td>
+            <td>
+              <%= data[i].TENSANPHAM %>
+            </td>
+            <td>
+              <%= data[i].SOLUONG %>
+            </td>
+            <td>
+              <img src="<%= data[i].IMAGE %>" alt="" style="max-width: 200px; max-height: 200px;">
+            </td>
+            <td>
+
+            </td>
+          </tr>
+          <% } %>
+      </tbody>
+    </table>
+  </div>
+</body>
+
+</html>
+
+<script>
+  //   document
+  //     .getElementById("image-upload")
+  //     .addEventListener("change", function (e) {
+  //       var file = e.target.files[0];
+  //       var reader = new FileReader();
+
+  //       reader.onloadend = function () {
+  //         document.getElementById("image-preview").src = reader.result;
+  //       };
+
+  //       if (file) {
+  //         reader.readAsDataURL(file);
+  //       } else {
+  //         document.getElementById("image-preview").src = "";
+  //       }
+  //     });
+
+  //   const courses = [];
+  //   localStorage.setItem("dataCourse", JSON.stringify(courses));
+  //   const dataCourse = JSON.parse(localStorage.getItem("dataCourse"));
+
+  //   const btnAddData = document.getElementById("addDataBtn");
+  //   btnAddData.addEventListener("click", function (e) {
+  //     e.preventDefault();
+  //     const name = document.querySelector('input[name="name"]').value;
+  //     const course_type = document.querySelector(
+  //       'input[name="course_type"]'
+  //     ).value;
+  //     const semeter = document.querySelector('input[name="semeter"]').value;
+  //     const department = document.querySelector('input[name="department"]').value;
+  //     const image = document.querySelector('input[name="image"]').value;
+  //     const course = {
+  //       name,
+  //       course_type,
+  //       semeter,
+  //       department,
+  //       image,
+  //     };
+  //     debugger;
+  //     console.log(course);
+  //     dataCourse.push(course);
+  //     localStorage.setItem("dataCourse", JSON.stringify(dataCourse));
+  //     // window.location.reload();
+  //   });
+</script>
